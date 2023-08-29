@@ -25,7 +25,7 @@ class AMC
      */
     public function __construct($payload)
     {
-        $this->payload = base64_decode($payload);
+        $this->payload = base64_decode($payload, true);
     }
 
 
@@ -34,7 +34,7 @@ class AMC
         try {
             $this->validate($this->payload);
             return [
-                'data' => $this->getDate($this->payload),
+                'date' => $this->getDate($this->payload),
                 'chunks' => $this->getChunks(substr($this->payload, self::DATE_LENGTH, (self::PAYLOAD_LENGTH - self::CRC_LENGTH))),
             ];
         } catch (\Exception $exception) {
@@ -51,6 +51,10 @@ class AMC
      */
     private function validate($payload): void
     {
+        if (!$payload){
+            throw ValidationException::withMessages(['payload' => 'Invalid payload, unable to decode']);
+        }
+
         if (strlen($payload) !== self::PAYLOAD_LENGTH){
             throw ValidationException::withMessages(['payload' => 'invalid payload length']);
         }

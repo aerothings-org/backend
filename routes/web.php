@@ -24,9 +24,16 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('aaa', function (){
+    \Illuminate\Support\Facades\Notification::route('aerothings')->notify(new \App\Notifications\SendToSlackReceivedDataSwarmNotification('aaa'));
+
+    //\Illuminate\Support\Facades\Notification::send(['aaa'], new \App\Notifications\SendToSlackReceivedDataSwarmNotification('sasa'));
+});
+
 Route::get('/teste', function (){
     $payload = '64eaa74f04a7f8ef015f03bd47f81d7aa216ac1005dc372a027e90fa37113c2313d7c0df017d88ef01674f8769bd46b60f06b2d000a31d1505a3425abf6c11717adbaf92034dcaf500ae997ca22ab24d17579b9c00e280f504263bd8672c78083b64938b02f7d74805b31991969823473d87174b028b04a101e48d6a66d1a46477e94c1100bd7cfa023e2e0e635f8a1a1fd56994045757ba034db87e530f4668b0993a69e3f6d042';
     $payload = base64_encode($payload);
+
 
     $amc = new \App\Service\Protocols\AMC($payload);
     $data = $amc->decode();
