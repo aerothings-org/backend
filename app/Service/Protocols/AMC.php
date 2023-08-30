@@ -36,6 +36,7 @@ class AMC
             return [
                 'date' => $this->getDate($this->payload),
                 'chunks' => $this->getChunks(substr($this->payload, self::DATE_LENGTH, (self::PAYLOAD_LENGTH - self::CRC_LENGTH))),
+                'error' => false,
             ];
         } catch (\Exception $exception) {
             return [
