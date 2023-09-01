@@ -68,27 +68,20 @@ class AMC
 
     private function getChunks($payload): array
     {
-        $chunk = [];
-        $i = 1;
+        $chunks = [];
         $offset = 0;
-        while ($i <= self::CHUNK_SIZE) {
-            $c= [];
-            $c['lat'] = $this->convertCoordinates(substr($payload,$offset,self::LAT_LENGTH));
-            $offset = ($offset + self::LAT_LENGTH);
-            $c['lng'] = $this->convertCoordinates(substr($payload,$offset,self::LAT_LENGTH));
-            $offset = ($offset + self::LNG_LENGTH);
-            $c['alt'] = hexdec(substr($payload,$offset,self::ALT_LENGTH));
-            $offset = ($offset + self::ALT_LENGTH);
-            $c['speed'] = hexdec(substr($payload,$offset,self::SPEED_LENGTH));
-            $offset = ($offset + self::SPEED_LENGTH);
-            $c['giro'] = hexdec(substr($payload,$offset,self::GIRO_LENGTH));
-            $offset = ($offset + self::GIRO_LENGTH);
-            $c['temp'] = hexdec(substr($payload,$offset,self::TEMP_LENGTH));
-            $offset = ($offset + self::TEMP_LENGTH);
-            $chunk[] = $c;
-            $i++;
+        for ($i = 0; $i < self::CHUNK_SIZE; $i++) {
+            $chunk = [
+                'lat' => $this->convertCoordinates(substr($payload, $offset, self::LAT_LENGTH)),
+                'lng' => $this->convertCoordinates(substr($payload, $offset += self::LAT_LENGTH, self::LNG_LENGTH)),
+                'alt' => hexdec(substr($payload, $offset += self::LNG_LENGTH, self::ALT_LENGTH)),
+                'speed' => hexdec(substr($payload, $offset += self::ALT_LENGTH, self::SPEED_LENGTH)),
+                'giro' => hexdec(substr($payload, $offset += self::SPEED_LENGTH, self::GIRO_LENGTH)),
+                'temp' => hexdec(substr($payload, $offset += self::GIRO_LENGTH, self::TEMP_LENGTH)),
+            ];
+            $chunks[] = $chunk;
         }
-        return $chunk;
+        return $chunks;
     }
 
     private function getDate($payload): string
@@ -104,7 +97,4 @@ class AMC
         }
         return number_format($decimalValue/30000/60, 7, '.', '');
     }
-
-
-
 }
