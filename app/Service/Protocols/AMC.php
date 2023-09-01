@@ -73,9 +73,9 @@ class AMC
         $offset = 0;
         while ($i <= self::CHUNK_SIZE) {
             $c= [];
-            $c['lat'] = ((hexdec(substr($payload,$offset,self::LAT_LENGTH))/30000)/60);
+            $c['lat'] = $this->convertCoordinates(substr($payload,$offset,self::LAT_LENGTH));
             $offset = ($offset + self::LAT_LENGTH);
-            $c['lng'] = ((hexdec(substr($payload,$offset,self::LNG_LENGTH))/30000)/60);
+            $c['lng'] = $this->convertCoordinates(substr($payload,$offset,self::LAT_LENGTH));
             $offset = ($offset + self::LNG_LENGTH);
             $c['alt'] = hexdec(substr($payload,$offset,self::ALT_LENGTH));
             $offset = ($offset + self::ALT_LENGTH);
@@ -94,6 +94,15 @@ class AMC
     private function getDate($payload): string
     {
         return Carbon::createFromTimestamp(hexdec(substr($payload, 0, self::DATE_LENGTH)))->format('d/m/Y H:i:s');
+    }
+
+    private function convertCoordinates($hex): float
+    {
+        $decimalValue = unpack("N", hex2bin(substr($hex, 2)))[1];
+        if ($decimalValue >= 0x80000000) {
+            $decimalValue -= 0x100000000;
+        }
+        return number_format($decimalValue/30000/60, 7, '.', '');
     }
 
 
