@@ -24,6 +24,23 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('teste', function (\Illuminate\Http\Request $request){
+    $decimalValue = unpack("N", hex2bin(substr($request->hex, 2)))[1];
+    if ($decimalValue >= 0x80000000) {
+        $decimalValue -= 0x100000000;
+    }
+    $decimalValue = number_format($decimalValue/30000/60, 7, '.', '');
+    echo 'Hexadecimal: ' . $request->hex;
+    echo "<br>";
+    echo 'int32: '. $decimalValue;
+});
+
+Route::get('/tt', function (){
+    $payload = 'CA1DF46403085726FD78CBE4FA000000000000FC3F085726FD78CBE4FA000000000000FC3F085726FD78CBE4FA000000000000FC3FC5A8';
+    $payload = base64_encode($payload);
+    $amc = new \App\Service\Protocols\AMC($payload);
+    return response()->json($amc->decode());
+});
 
 Route::middleware([
     'auth:sanctum',
